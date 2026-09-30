@@ -1,0 +1,18 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-full);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.sm { font-size: var(--text-xs); padding: 2px 8px; }
+.md { font-size: var(--text-sm); padding: 4px 12px; }
+
+.cyan    { background: var(--accent-cyan-10);    color: var(--accent-cyan);    border: 1px solid rgba(0, 240, 255, 0.20); }
+.violet  { background: var(--accent-violet-10);  color: var(--accent-violet);  border: 1px solid rgba(124, 58, 237, 0.20); }
+.emerald { background: var(--accent-emerald-10); color: var(--accent-emerald); border: 1px solid rgba(0, 255, 163, 0.20); }
+.amber   { background: var(--accent-amber-10);   color: var(--accent-amber);   border: 1px solid rgba(255, 184, 0, 0.20); }
+.rose    { background: rgba(255, 77, 109, 0.10); color: var(--accent-rose);    border: 1px solid rgba(255, 77, 109, 0.20); }
+.muted   { background: var(--bg-elevated);       color: var(--text-muted);     border: 1px solid var(--border); }

@@ -1,0 +1,178 @@
+/* ─── Design Tokens ───────────────────────────────────────────────────────────
+   Single source of truth for every colour, spacing, radius, shadow, and
+   transition used in the application.  All components read from these
+   variables — never hardcode values.
+
+   Theme switching is pure CSS: toggling [data-theme="light"] on <html>
+   instantly cascades the new values through the entire tree with no JS
+   re-renders and no FOUC.
+─────────────────────────────────────────────────────────────────────────────── */
+
+/* ── Dark mode (default) ──────────────────────────────────────────────────── */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Backgrounds */
+  --bg-base:       #07090E;
+  --bg-surface:    rgba(13, 18, 31, 0.72);
+  --bg-card:       rgba(18, 24, 42, 0.65);
+  --bg-elevated:   rgba(24, 32, 58, 0.80);
+  --bg-input:      rgba(10, 14, 26, 0.90);
+
+  /* Borders */
+  --border:        rgba(255, 255, 255, 0.08);
+  --border-focus:  rgba(0, 240, 255, 0.45);
+
+  /* Text */
+  --text-primary:  #E8EEFF;
+  --text-secondary: rgba(180, 190, 220, 0.80);
+  --text-muted:    rgba(150, 165, 200, 0.55);
+  --text-inverse:  #07090E;
+
+  /* Accent palette */
+  --accent-cyan:    #00F0FF;   /* vector search / primary action */
+  --accent-violet:  #7C3AED;   /* graph traversal */
+  --accent-emerald: #00FFA3;   /* cache hit */
+  --accent-amber:   #FFB800;   /* guardrails / warning */
+  --accent-rose:    #FF4D6D;   /* error / danger */
+
+  /* Accent with opacity */
+  --accent-cyan-10:  rgba(0, 240, 255, 0.10);
+  --accent-cyan-20:  rgba(0, 240, 255, 0.20);
+  --accent-violet-10: rgba(124, 58, 237, 0.12);
+  --accent-emerald-10: rgba(0, 255, 163, 0.10);
+  --accent-amber-10:  rgba(255, 184, 0, 0.10);
+
+  /* Glow shadows */
+  --glow-cyan:    0 0 20px rgba(0, 240, 255, 0.35), 0 0 60px rgba(0, 240, 255, 0.10);
+  --glow-violet:  0 0 20px rgba(124, 58, 237, 0.40);
+  --glow-emerald: 0 0 20px rgba(0, 255, 163, 0.35);
+  --glow-amber:   0 0 20px rgba(255, 184, 0, 0.35);
+
+  /* Glass */
+  --glass-blur:     blur(14px) saturate(1.6);
+  --glass-bg:       rgba(13, 18, 31, 0.55);
+
+  /* Elevation shadows */
+  --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.50);
+  --shadow-md:  0 4px 16px rgba(0, 0, 0, 0.55);
+  --shadow-lg:  0 8px 40px rgba(0, 0, 0, 0.65);
+
+  /* Charts */
+  --chart-1: #00F0FF;
+  --chart-2: #7C3AED;
+  --chart-3: #00FFA3;
+  --chart-4: #FFB800;
+  --chart-5: #FF4D6D;
+  --chart-grid: rgba(255, 255, 255, 0.06);
+  --chart-tooltip-bg: rgba(13, 18, 31, 0.95);
+}
+
+/* ── Light mode ───────────────────────────────────────────────────────────── */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg-base:       #F0F4FF;
+  --bg-surface:    rgba(255, 255, 255, 0.85);
+  --bg-card:       rgba(248, 251, 255, 0.92);
+  --bg-elevated:   rgba(255, 255, 255, 0.98);
+  --bg-input:      rgba(240, 244, 255, 0.95);
+
+  --border:        rgba(0, 0, 0, 0.08);
+  --border-focus:  rgba(8, 145, 178, 0.50);
+
+  --text-primary:  #0F172A;
+  --text-secondary: rgba(30, 50, 100, 0.75);
+  --text-muted:    rgba(60, 80, 140, 0.50);
+  --text-inverse:  #F0F4FF;
+
+  --accent-cyan:    #0891B2;
+  --accent-violet:  #6D28D9;
+  --accent-emerald: #059669;
+  --accent-amber:   #D97706;
+  --accent-rose:    #E11D48;
+
+  --accent-cyan-10:   rgba(8, 145, 178, 0.10);
+  --accent-cyan-20:   rgba(8, 145, 178, 0.18);
+  --accent-violet-10: rgba(109, 40, 217, 0.10);
+  --accent-emerald-10: rgba(5, 150, 105, 0.10);
+  --accent-amber-10:  rgba(217, 119, 6, 0.10);
+
+  --glow-cyan:    0 2px 12px rgba(8, 145, 178, 0.20);
+  --glow-violet:  0 2px 12px rgba(109, 40, 217, 0.20);
+  --glow-emerald: 0 2px 12px rgba(5, 150, 105, 0.20);
+  --glow-amber:   0 2px 12px rgba(217, 119, 6, 0.20);
+
+  --glass-blur:     blur(10px) saturate(1.3);
+  --glass-bg:       rgba(255, 255, 255, 0.60);
+
+  --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md:  0 4px 16px rgba(0, 0, 0, 0.10);
+  --shadow-lg:  0 8px 40px rgba(0, 0, 0, 0.14);
+
+  --chart-1: #0891B2;
+  --chart-2: #6D28D9;
+  --chart-3: #059669;
+  --chart-4: #D97706;
+  --chart-5: #E11D48;
+  --chart-grid: rgba(0, 0, 0, 0.06);
+  --chart-tooltip-bg: rgba(248, 251, 255, 0.98);
+}
+
+/* ── Shared Tokens (theme-independent) ───────────────────────────────────── */
+:root {
+  /* Spacing scale (multiples of 4px) */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Border radii */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-full: 9999px;
+
+  /* Typography scale */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --text-xs:   0.75rem;    /* 12px */
+  --text-sm:   0.875rem;   /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg:   1.125rem;   /* 18px */
+  --text-xl:   1.25rem;    /* 20px */
+  --text-2xl:  1.5rem;     /* 24px */
+  --text-3xl:  1.875rem;   /* 30px */
+  --text-4xl:  2.25rem;    /* 36px */
+
+  --font-weight-normal:   400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+  --font-weight-bold:     700;
+
+  /* Transitions */
+  --transition-fast:   150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base:   250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow:   400ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Z-index layers */
+  --z-base:    0;
+  --z-raised:  10;
+  --z-overlay: 100;
+  --z-modal:   200;
+  --z-toast:   300;
+  --z-tooltip: 400;
+
+  /* Sidebar / Layout */
+  --sidebar-width:          240px;
+  --sidebar-collapsed-width: 64px;
+  --navbar-height:          56px;
+}

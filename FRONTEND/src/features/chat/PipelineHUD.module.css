@@ -1,0 +1,78 @@
+.hud {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: var(--space-2) var(--space-4);
+  overflow-x: auto;
+  scrollbar-width: none;
+  animation: slide-up 250ms ease-out forwards;
+}
+
+.hud::-webkit-scrollbar { display: none; }
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  transition: all var(--transition-base);
+  white-space: nowrap;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.35;
+  flex-shrink: 0;
+  transition: opacity var(--transition-base);
+}
+
+.label { opacity: 0.5; transition: opacity var(--transition-base); }
+
+/* Active step */
+.step.active .dot    { opacity: 1; animation: glow-pulse 1s ease-in-out infinite; }
+.step.active .label  { opacity: 1; }
+
+/* Completed step */
+.step.completed .dot   { opacity: 1; }
+.step.completed .label { opacity: 0.9; }
+
+/* Color variants */
+.step.cyan.active, .step.cyan.completed {
+  color: var(--accent-cyan);
+  border-color: rgba(0, 240, 255, 0.20);
+  background: var(--accent-cyan-10);
+}
+.step.violet.active, .step.violet.completed {
+  color: var(--accent-violet);
+  border-color: rgba(124, 58, 237, 0.20);
+  background: var(--accent-violet-10);
+}
+.step.emerald.active, .step.emerald.completed {
+  color: var(--accent-emerald);
+  border-color: rgba(0, 255, 163, 0.20);
+  background: var(--accent-emerald-10);
+}
+.step.amber.active, .step.amber.completed {
+  color: var(--accent-amber);
+  border-color: rgba(255, 184, 0, 0.20);
+  background: var(--accent-amber-10);
+}
+
+/* Connector line */
+.connector {
+  flex: 1;
+  height: 1px;
+  min-width: 8px;
+  background: var(--border);
+  transition: background var(--transition-slow);
+}
+
+.connectorDone { background: var(--accent-cyan-20); }
