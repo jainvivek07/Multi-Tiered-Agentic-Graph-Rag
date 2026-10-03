@@ -20,7 +20,7 @@ USER appuser
 COPY --chown=appuser:appuser pyproject.toml uv.lock ./
 
 # Install dependencies without downloading extras
-RUN uv sync --frozen --no-cache
+RUN uv sync --frozen --no-cache --no-install-project
 
 # Copy the full application source
 COPY --chown=appuser:appuser . .
