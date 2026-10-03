@@ -37,7 +37,6 @@ dependencies = [
     "starlette-csrf>=3.0.0",
     "redisvl>=0.27.2",
     "slowapi>=0.1.10",
-    "supabase>=2.32.0",
 ]
 
 [project.scripts]

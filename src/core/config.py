@@ -1,12 +1,9 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Literal, Optional
+from typing import Optional
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Tiered Agentic Graph RAG"
     API_V1_STR: str = "/api/v1"
-
-    # Deployment mode: 'local' | 'deployment'
-    APP_ENV: Literal["local", "deployment"] = "deployment"
 
     # Security
     SECRET_KEY: str
@@ -22,13 +19,10 @@ class Settings(BaseSettings):
 
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> str:
-        if self.APP_ENV=="local":
-            return (
-                f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
-                f"@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
-            )
-        
-        return self.SUPABASE_URL
+        return (
+            f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
+            f"@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        )
 
     # Neo4j — admin (read-write) connection
     NEO4J_URI: str
@@ -76,10 +70,6 @@ class Settings(BaseSettings):
 
     # NeMo Guardrails
     NEMO_CONFIG_PATH: str = "config/nemo"
-
-    # Supabase (required when APP_ENV=deployment)
-    SUPABASE_URL: Optional[str] = None
-    SUPABASE_SERVICE_KEY: Optional[str] = None
 
     # Celery
     CELERY_BROKER_URL: str = "redis://localhost:6379/1"

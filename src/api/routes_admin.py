@@ -1,7 +1,6 @@
 import mimetypes
 import shutil
 import tempfile
-import uuid
 from pathlib import Path
 from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, status
 from fastapi.responses import FileResponse
@@ -15,7 +14,6 @@ from src.services.admin_service import AdminService
 from src.tasks.ingestion_tasks import process_document_task
 from src.core.logger import log
 from src.infra.neo4j import neo4j_manager
-from src.core.config import settings
 from sqlalchemy.future import select
 from typing import Optional
 
@@ -137,13 +135,7 @@ async def list_category_documents(
             "category": d.category,
             "status": d.status,
             "created_at": d.created_at.isoformat() if d.created_at else None,
-            # In deployment mode file_path holds the Supabase storage key (always present if set);
-            # in local mode we check the file actually exists on disk.
-            "has_file": (
-                bool(d.file_path)
-                if settings.APP_ENV == "deployment"
-                else bool(d.file_path and Path(d.file_path).exists())
-            ),
+            "has_file": bool(d.file_path and Path(d.file_path).exists()),
         }
         for d in docs
     ]
@@ -216,16 +208,6 @@ async def serve_document_file(
 
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
-
-    if settings.APP_ENV == "deployment":
-        # In deployment mode, file_path stores the Supabase storage key.
-        if not doc.file_path:
-            raise HTTPException(status_code=404, detail="No file associated with this document")
-        from src.core.storage import get_signed_url
-        signed_url = get_signed_url(doc.file_path, expires_in_seconds=3600)
-        return {"url": signed_url}
-
-    # Local mode — serve directly from disk
     if not doc.file_path or not Path(doc.file_path).exists():
         raise HTTPException(status_code=404, detail="File not found on disk")
 
@@ -337,58 +319,38 @@ async def trigger_ingestion(
             detail=f"Unsupported file type '{file.content_type}'. Allowed: PDF, HTML, TXT.",
         )
 
+    # Save to a temp file first so we have the content to copy
+    tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+    shutil.copyfileobj(file.file, tmp_file)
+    tmp_file.close()
+
     doc_repo = DocumentRepository(session)
+    doc = await doc_repo.create(Document(
+        filename=file.filename,
+        category=category,
+        uploaded_by=admin.id,
+        status="pending",
+    ))
 
-    if settings.APP_ENV == "deployment":
-        # --- Deployment path: stream directly to Supabase Storage ---
-        from src.core.storage import upload_file_to_supabase
+    # Persist the file to uploads/ using doc_id prefix to avoid naming conflicts
+    uploads_dir = Path("uploads")
+    uploads_dir.mkdir(exist_ok=True)
+    safe_filename = f"{doc.id}_{Path(file.filename or 'document').name}"
+    persistent_path = uploads_dir / safe_filename
+    shutil.copy2(tmp_file.name, persistent_path)
 
-        file_bytes = await file.read()
-        storage_key = f"{uuid.uuid4()}{suffix}"
-        upload_file_to_supabase(file_bytes, storage_key, content_type)
+    # Store the persistent path in DB
+    doc.file_path = str(persistent_path)
+    await session.commit()
 
-        doc = await doc_repo.create(Document(
-            filename=file.filename,
-            category=category,
-            uploaded_by=admin.id,
-            status="pending",
-            file_path=storage_key,   # reuse file_path column to store Supabase key
-        ))
-
-        process_document_task.delay(
-            doc_id=str(doc.id),
-            file_path=storage_key,   # worker will interpret this as a Supabase key
-            category=category,
-        )
-    else:
-        # --- Local path: save to uploads/ on disk (original behaviour) ---
-        tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
-        shutil.copyfileobj(file.file, tmp_file)
-        tmp_file.close()
-
-        doc = await doc_repo.create(Document(
-            filename=file.filename,
-            category=category,
-            uploaded_by=admin.id,
-            status="pending",
-        ))
-
-        uploads_dir = Path("uploads")
-        uploads_dir.mkdir(exist_ok=True)
-        safe_filename = f"{doc.id}_{Path(file.filename or 'document').name}"
-        persistent_path = uploads_dir / safe_filename
-        shutil.copy2(tmp_file.name, persistent_path)
-
-        doc.file_path = str(persistent_path)
-        await session.commit()
-
-        process_document_task.delay(
-            doc_id=str(doc.id),
-            file_path=tmp_file.name,
-            category=category,
-        )
-
+    # Dispatch to Celery (task will clean up tmp_file)
+    process_document_task.delay(
+        doc_id=str(doc.id),
+        file_path=tmp_file.name,
+        category=category,
+    )
     log.info("Ingestion task enqueued", doc_id=str(doc.id), category=category)
+
     return {"document_id": str(doc.id), "status": "pending", "message": "Ingestion queued."}
 
 
