@@ -1,9 +1,11 @@
 FROM python:3.11-slim
 
-# Install supervisor and required system libraries
+# Install supervisor and required system libraries (libpq-dev and gcc are needed for psycopg2)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     supervisor \
     curl \
+    libpq-dev \
+    gcc \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv package manager
@@ -24,6 +26,9 @@ RUN uv sync --frozen --no-cache --no-install-project
 
 # Copy the full application source
 COPY --chown=appuser:appuser . .
+
+# Install the project itself now that the source code is present
+RUN uv sync --frozen --no-cache
 
 # Expose the port required by Hugging Face Spaces
 EXPOSE 7860
